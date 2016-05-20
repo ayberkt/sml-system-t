@@ -1,0 +1,26 @@
+Library
+  signature LIST_UTIL
+  structure List_Util
+  signature OPERATOR
+  structure T_Operator
+  signature VARIABLE
+  structure Var
+  signature ABT
+  functor Abt
+  signature ABT_UTIL
+  functor ABT_Util
+  structure Term
+is
+  src/list_util.sig
+  src/list_util.sml
+  src/operator.sig
+  src/t_operator.sml
+  src/variable.sig
+  src/variable.sml
+  src/abt.sig
+  src/abt.fun
+  src/abt_util.sig
+  src/abt_util.fun
+  src/term.sml
+
+  $/basis.cm
