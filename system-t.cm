@@ -10,6 +10,7 @@ Library
   signature ABT_UTIL
   functor ABT_Util
   structure Term
+  structure Context
 is
   src/list_util.sig
   src/list_util.sml
@@ -22,5 +23,7 @@ is
   src/abt_util.sig
   src/abt_util.fun
   src/term.sml
+  src/context.sml
 
   $/basis.cm
+  $/smlnj-lib.cm
