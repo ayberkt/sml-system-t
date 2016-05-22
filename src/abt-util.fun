@@ -44,7 +44,7 @@ struct
         in
             A.Operator.toString f ^ esStr
         end
-     | A.\ (x, e) => (A.Variable.toString x) ^ ". " ^ (toString e)
+     | A.\ (x, e) => (A.Variable.toString x) ^ "." ^ (toString e)
   and toStrings [] = ""
     | toStrings [e] = toString e
     | toStrings (e :: es) = (toString e) ^ ", " ^ (toStrings es)
