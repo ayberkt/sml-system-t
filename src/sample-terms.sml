@@ -12,13 +12,16 @@ val _ =
         val term1 : Term.t =
             Term.$$(TermOps.Succ, [Term.$$(TermOps.Zero, [])])
 
-        (* lam{nat}(x.s(x)) *)
+        (* lam{nat}(x.z) *)
         val term2 : Term.t =
             Term.$$(TermOps.Lam (Type.$$(TypeOps.NAT, [])),
                     [Term.\\ (Var.newvar "x",
                               Term.$$(TermOps.Zero, []))])
 
+        (* (lam{nat}(x.s(x))) s(s(z)) *)
+        val term3 : Term.t =
+            Term.$$(TermOps.App, [term2, term1])
+
     in
-        printType term1;
-        printType term2
+        List.map printType [term1, term2, term3]
     end
