@@ -38,7 +38,7 @@ struct
           case t of
               FV y => if Var.equal(x, y) then BV i else FV y
             | ABS t => ABS (bind' (i+1) t)
-            | BV n => BTypeOpsV n
+            | BV n => BV n
             | OPER(f, ts) => OPER(f, List.map (bind' i) ts)
     in
         ABS (bind' 0 t)
