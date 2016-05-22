@@ -1,1 +1,1 @@
-structure Term = ABT_Util(Abt(T_Operator))
+structure Term = ABT_Util(Abt(TermOps))

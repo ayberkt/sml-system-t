@@ -2,7 +2,7 @@ Library
   signature LIST_UTIL
   structure List_Util
   signature OPERATOR
-  structure T_Operator
+  structure TermOps
   signature VARIABLE
   structure Var
   signature ABT
@@ -15,7 +15,7 @@ is
   src/list_util.sig
   src/list_util.sml
   src/operator.sig
-  src/t_operator.sml
+  src/term_ops.sml
   src/variable.sig
   src/variable.sml
   src/abt.sig

@@ -1,4 +1,4 @@
-structure T_Operator : OPERATOR =
+structure TermOps : OPERATOR =
 struct
 
   datatype t =
