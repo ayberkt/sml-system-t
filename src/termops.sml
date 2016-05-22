@@ -24,7 +24,7 @@ struct
   fun toString Zero    = "z"
     | toString Succ    = "s"
     | toString Rec     = "rec"
-    | toString (Lam t) = "lam" ^ (Type.toString t)
+    | toString (Lam t) = "lam" ^ "{" ^ Type.toString t ^ "}"
     | toString App     = "ap"
 
 end

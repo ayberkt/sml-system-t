@@ -37,7 +37,13 @@ struct
   fun toString e =
     case A.out e of
         A.` x => A.Variable.toString x
-     | A.$ (f, es) => (A.Operator.toString f) ^ "(" ^ (toStrings es) ^ ")"
+      | A.$ (f, es) =>
+        let
+            val esStr =
+                if (null es) then "" else "(" ^ (toStrings es) ^ ")"
+        in
+            A.Operator.toString f ^ esStr
+        end
      | A.\ (x, e) => (A.Variable.toString x) ^ ". " ^ (toString e)
   and toStrings [] = ""
     | toStrings [e] = toString e
