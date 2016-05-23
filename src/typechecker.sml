@@ -12,34 +12,70 @@ struct
           val nat : Type.t = Type.$$((TypeOps.NAT), [] : Type.t list)
       in
           (case Term.out e of
-              (* ------------------------------- *)
-              (*          Γ ⊢ Zero : nat         *)
-              Term.$(TermOps.Zero, _) => nat
+               (* ------------------------------- (9.1a) *)
+               (*        Γ, x : t ⊢ x : t                *)
+               Term.`(x) =>
+               (case Context.find(ctx, x) of
+                    SOME t => t
+                 |  NONE => raise TypeError ("variable " ^ (Var.toString x) ^ " cannot be found"))
 
-              (*           Γ ⊢ x : nat           *)
-              (* ------------------------------- *)
-              (*         Γ ⊢ (Succ x) : nat      *)
+              (* ------------------------------- (9.1b) *)
+              (*          Γ ⊢ Zero : nat                *)
+            | Term.$(TermOps.Zero, _) => nat
+
+              (*           Γ ⊢ x : nat                  *)
+              (* ------------------------------- (9.1c) *)
+              (*         Γ ⊢ (Succ x) : nat             *)
             | Term.$(TermOps.Succ, [x]) =>
               if (equiv (typecheck ctx x) nat)
               then nat
               else raise TypeError "s can be only applied to a nat."
 
+              (*  Γ ⊢ e : nat  Γ ⊢ e0 : t  Γ, x : nat, y : t ⊢ e1 : t        *)
+              (* ---------------------------------------------------- (9.1d) *)
+              (*                  Γ ⊢ (Succ x) : nat                         *)
+            | Term.$(TermOps.Rec, [e0, e1, e]) =>
+              (let
+                  val eTy = typecheck ctx e
+                  val t : Type.t = typecheck ctx e0
+                  val e1Ty =
+                      case Term.out e1 of
+                          Term.\ (x, body') =>
+                          case Term.out body' of
+                              Term.\ (y, body) =>
+                              let
+                                  val ctx'  = Context.insert(ctx, x, nat)
+                                  val ctx'' = Context.insert(ctx', y, t)
+                              in
+                                  typecheck ctx'' body
+                              end
+              in
+                  if equiv e1Ty t andalso equiv eTy nat
+                  then e1Ty
+                  else
+                      let
+                          val message = (Type.toString e1Ty ^ "not equal to" ^ Type.toString t)
+                      in
+                          raise TypeError message
+                      end
+              end)
+
+              (*       𝚪, var : t1 ⊢ body : t2                 *)
+              (* -------------------------------------- (9.1e) *)
+              (*   Γ ⊢ lam{t1}(var.body) : arr(t1, t2)         *)
             | Term.$((TermOps.Lam t1), [e]) =>
-              (*       𝚪, var:t1 ⊢ body:t2          *)
-              (* ---------------------------------- *)
-              (*   Γ ⊢ lam{t1}(var.body) : t1 → t2  *)
               let
                   val (Term.\ (var, body)) = Term.out e
                   val ctx' = Context.insert(ctx, var, t1)
                   val t2 : Type.t = typecheck ctx' body
-                  val t1tot2 : Type.t = Type.$$(TypeOps.ARR, [nat, nat])
               in
-                  t1tot2
+                  Type.$$(TypeOps.ARR, [nat, nat])
               end
+
+              (*   𝚪, f:arr(t1, t2)      Γ ⊢ x:t1          *)
+              (* ---------------------------------- (9.1f) *)
+              (*          Γ ⊢ ap(f, x) : t2                *)
             | Term.$(TermOps.App, [f, x]) =>
-              (*   𝚪, f:arr(t1, t2)      Γ ⊢ x:t1   *)
-              (* ---------------------------------- *)
-              (*          Γ ⊢ ap(f, x) : t2         *)
               let
                   val [t1, t2] =
                       case Type.out (typecheck ctx f) of
@@ -51,32 +87,6 @@ struct
                   then t2
                   else raise TypeError "Operand type does not match the operator domain."
               end
-            | Term.$(TermOps.Rec, [e0, e1, e]) =>
-              (let
-                  val eTy = typecheck ctx e
-                  val e0Ty : Type.t = typecheck ctx e0
-                  val e1Ty =
-                      case Term.out e1 of
-                          Term.\ (x, body') =>
-                          case Term.out body' of
-                              Term.\ (y, body) =>
-                              let
-                                  val ctx'  = Context.insert(ctx, x, nat)
-                                  val ctx'' = Context.insert(ctx', y, e0Ty)
-                              in
-                                  typecheck ctx'' body
-                              end
-              in
-                  if equiv e1Ty e0Ty andalso equiv eTy nat
-                  then e1Ty
-                  else raise TypeError (Type.toString e1Ty ^ "not equal to" ^ Type.toString e0Ty)
-              end)
-            | Term.`(x) =>
-              (* ------------------------------- *)
-              (*        Γ, x : t ⊢ x : t         *)
-              (case Context.find(ctx, x) of
-                  SOME t => t
-               |  NONE => raise TypeError ("variable " ^ (Var.toString x) ^ " cannot be found"))
             | _ => raise TypeError "no rule applies")
       end
 end
