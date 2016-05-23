@@ -4,8 +4,7 @@ Group is
 
   abt/abt.cm
 
-  context.sml
-
+  statics/context.sml
   statics/type.sml
   statics/typechecker.sig
   statics/typechecker.sml
