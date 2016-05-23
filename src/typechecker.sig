@@ -1,6 +1,6 @@
 signature TYPECHECKER =
 sig
-    exception TypeError
+    exception TypeError of string
 
     type context = Type.t Context.map
 

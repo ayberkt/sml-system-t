@@ -4,20 +4,12 @@ struct
 
   val counter = ref 0
 
-  fun newvar s =
-    let
-        val (ref n) = counter
-    in
-        (counter := n + 1 ; (s, n))
-    end
+  fun newvar s = (s, (counter := !counter + 1; !counter))
 
-  fun compare ((str, n), (str', m)) =
-    (case Int.compare (n, m) of
-        EQUAL => String.compare (str, str')
-      | order => order)
+  fun equal ((_, n), (_, m)) = n = m
 
-  fun equal (x, y) = compare (x, y) = EQUAL
+  fun compare ((_, n), (_, m)) = Int.compare(n, m)
 
-  fun toString (s, x) = s
+  fun toString (s, n) = s ^ "@" ^ (Int.toString n)
 
 end
