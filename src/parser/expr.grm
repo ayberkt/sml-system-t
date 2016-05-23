@@ -1,0 +1,64 @@
+structure T = Term
+structure TY = Type
+(* structure TLC = TopLevelCommands *)
+exception Parse of string
+
+fun createLam (var : Var.t) (t : TY.t) (body : T.t) : T.t
+  = T.$$(TermOps.Lam t, [(T.\\ (var, body))])
+
+fun createArr (t1 : TY.t) (t2: TY.t) : TY.t =
+  Type.$$(TypeOps.ARR, [t1, t2])
+
+val nat = TY.$$(TypeOps.NAT, [])
+
+%%
+(* %header (functor LangLrValsFn (structure Token : TOKEN)) *)
+
+
+%term IDENT of string
+    | NATTYPE
+    | ARRTYPE
+    | ZERO
+    | SUCC
+    | REC
+    | LAMBDA
+    | COLON
+    | MAPSTO
+    | LPAREN
+    | RPAREN
+    | LCURLY
+    | RCURLY
+    | BAR
+    | WITH
+    | END
+    | STEP
+    | EVAL
+    | CHECKED
+    | UNCHECKED
+    | SEMI
+    | EOF
+
+%nonterm ty of TY.t
+       | exp of T.t
+       | var of Var.t
+
+%verbose
+%pos int
+%start exp
+%eop EOF SEMI
+%noshift EOF SEMI
+%name Exp
+
+%%
+
+ty : NATTYPE                (nat)
+   | ty ARRTYPE ty          ( createArr ty1 ty2 )
+
+exp : var (T.`` var)
+    | ZERO (T.$$(TermOps.Zero, []))
+    | SUCC exp (T.$$(TermOps.Succ, [exp1]))
+    | REC exp LCURLY ZERO MAPSTO exp BAR SUCC LPAREN exp RPAREN WITH exp MAPSTO exp RCURLY (T.$$(TermOps.Rec, [exp2, exp3, exp1]))
+    | LAMBDA LPAREN var COLON ty RPAREN exp ( createLam var ty exp )
+    | exp LPAREN exp RPAREN (T.$$(TermOps.App, [exp1, exp2]))
+
+var : IDENT     (ParserState.getvar IDENT)
