@@ -16,8 +16,10 @@ Group is
   dynamics/dynamics.sig
   dynamics/dynamics.sml
 
-
+  parser/input.sml
+  parser/stream.sml
   parser/symboltable.sml
   parser/parserstate.sml
   parser/expr.grm
   parser/expr.lex
+  parser/parse.sml

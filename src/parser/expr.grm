@@ -48,6 +48,7 @@ val nat = TY.$$(TypeOps.NAT, [])
 %eop EOF SEMI
 %noshift EOF SEMI
 %name Exp
+%left ARRTYPE
 
 %%
 
@@ -56,9 +57,10 @@ ty : NATTYPE                (nat)
 
 exp : var (T.`` var)
     | ZERO (T.$$(TermOps.Zero, []))
-    | SUCC exp (T.$$(TermOps.Succ, [exp1]))
+    | SUCC LPAREN exp RPAREN (T.$$(TermOps.Succ, [exp1]))
     | REC exp LCURLY ZERO MAPSTO exp BAR SUCC LPAREN exp RPAREN WITH exp MAPSTO exp RCURLY (T.$$(TermOps.Rec, [exp2, exp3, exp1]))
     | LAMBDA LPAREN var COLON ty RPAREN exp ( createLam var ty exp )
-    | exp LPAREN exp RPAREN (T.$$(TermOps.App, [exp1, exp2]))
+    (* | LPAREN exp RPAREN (exp) *)
+    (* | exp LPAREN exp RPAREN (T.$$(TermOps.App, [exp1, exp2])) *)
 
 var : IDENT     (ParserState.getvar IDENT)

@@ -110,7 +110,7 @@ fun processDefRepl text a =
 fun hdl f x y = (f x y)
       handle ParserState.Parse(s) =>
 	  		((TextIO.print ("Parse error: " ^ s ^ "\n")) ; y)
-	   | T.TypeError => ((TextIO.print "TypeChecker error!\n") ; y)
+	   | T.TypeError _ => ((TextIO.print "TypeChecker error!\n") ; y)
 	   | CD.RuntimeError => ((TextIO.print "Could not evaluate!\n") ; y)
 	   | CD.Malformed => ((TextIO.print "Something went seriously wrong in CheckedDynamics!\n") ; y)
 	   | UD.Malformed => ((TextIO.print "Something went seriously wrong in UncheckedDynamics!\n") ; y)
