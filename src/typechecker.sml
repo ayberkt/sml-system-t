@@ -13,27 +13,27 @@ struct
       in
           (case Term.out e of
                (* ------------------------------- (9.1a) *)
-               (*        Γ, x : t ⊢ x : t                *)
+               (*        𝚪, x : t ⊢ x : t                *)
                Term.`(x) =>
                (case Context.find(ctx, x) of
                     SOME t => t
                  |  NONE => raise TypeError ("variable " ^ (Var.toString x) ^ " cannot be found"))
 
               (* ------------------------------- (9.1b) *)
-              (*          Γ ⊢ Zero : nat                *)
+              (*          𝚪 ⊢ Zero : nat                *)
             | Term.$(TermOps.Zero, _) => nat
 
-              (*           Γ ⊢ x : nat                  *)
+              (*           𝚪 ⊢ x : nat                  *)
               (* ------------------------------- (9.1c) *)
-              (*         Γ ⊢ (Succ x) : nat             *)
+              (*         𝚪 ⊢ (Succ x) : nat             *)
             | Term.$(TermOps.Succ, [x]) =>
               if (equiv (typecheck ctx x) nat)
               then nat
               else raise TypeError "s can be only applied to a nat."
 
-              (*  Γ ⊢ e : nat  Γ ⊢ e0 : t  Γ, x : nat, y : t ⊢ e1 : t        *)
+              (*  𝚪 ⊢ e : nat  𝚪 ⊢ e0 : t  𝚪, x : nat, y : t ⊢ e1 : t        *)
               (* ---------------------------------------------------- (9.1d) *)
-              (*                  Γ ⊢ (Succ x) : nat                         *)
+              (*                  𝚪 ⊢ (Succ x) : nat                         *)
             | Term.$(TermOps.Rec, [e0, e1, e]) =>
               (let
                   val eTy = typecheck ctx e
@@ -62,7 +62,7 @@ struct
 
               (*       𝚪, var : t1 ⊢ body : t2                 *)
               (* -------------------------------------- (9.1e) *)
-              (*   Γ ⊢ lam{t1}(var.body) : arr(t1, t2)         *)
+              (*   𝚪 ⊢ lam{t1}(var.body) : arr(t1, t2)         *)
             | Term.$((TermOps.Lam t1), [e]) =>
               let
                   val (Term.\ (var, body)) = Term.out e
@@ -72,9 +72,9 @@ struct
                   Type.$$(TypeOps.ARR, [nat, nat])
               end
 
-              (*   𝚪, f:arr(t1, t2)      Γ ⊢ x:t1          *)
+              (*   𝚪, f:arr(t1, t2)      𝚪 ⊢ x:t1          *)
               (* ---------------------------------- (9.1f) *)
-              (*          Γ ⊢ ap(f, x) : t2                *)
+              (*          𝚪 ⊢ ap(f, x) : t2                *)
             | Term.$(TermOps.App, [f, x]) =>
               let
                   val [t1, t2] =
