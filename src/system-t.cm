@@ -1,6 +1,7 @@
 Group is
   $/basis.cm
   $/smlnj-lib.cm
+  $/ml-yacc-lib.cm
 
   abt/abt.cm
 
@@ -14,3 +15,9 @@ Group is
 
   dynamics/dynamics.sig
   dynamics/dynamics.sml
+
+
+  parser/symboltable.sml
+  parser/parserstate.sml
+  parser/expr.grm
+  parser/expr.lex

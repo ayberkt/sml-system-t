@@ -6,6 +6,8 @@ sig
            | Val
            | Err
 
+    val view : d -> D
+
     exception Malformed
 
     val trystep : Term.t -> d
