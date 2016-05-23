@@ -2,30 +2,16 @@ Group is
   $/basis.cm
   $/smlnj-lib.cm
 
-  abt-util.fun
-  abt-util.sig
-
-  abt.fun
-  abt.sig
+  abt/abt.cm
 
   context.sml
 
-  list-util.sig
-  list-util.sml
+  statics/type.sml
+  statics/typechecker.sig
+  statics/typechecker.sml
+  statics/typeops.sml
+  statics/termops.sml
+  statics/term.sml
 
-  operator.sig
-  termops.sml
-  typechecker.sml
-
-  term.sml
-  type.sml
-
-  typechecker.sig
-
-  typeops.sml
-
-  variable.sig
-  variable.sml
-
-  dynamics.sig
-  dynamics.sml
+  dynamics/dynamics.sig
+  dynamics/dynamics.sml
