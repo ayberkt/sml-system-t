@@ -69,7 +69,7 @@ struct
                   val ctx' = Context.insert(ctx, var, t1)
                   val t2 : Type.t = typecheck ctx' body
               in
-                  Type.$$(TypeOps.ARR, [nat, nat])
+                  Type.$$(TypeOps.ARR, [t1, t2])
               end
 
               (*   𝚪, f:arr(t1, t2)      𝚪 ⊢ x:t1          *)
