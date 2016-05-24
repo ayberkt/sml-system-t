@@ -18,6 +18,7 @@ sig
   val toString : t -> string
 
   (* Provides the string used to create the variable. *)
-  (* val toUserString : t -> string *)
+  val toUserString : t -> string
+
 end
 

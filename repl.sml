@@ -11,24 +11,44 @@ struct
         ExpParser.parse(0,lexstream,print_error,())
     end
 
-  fun parse () =
-    let val lexer = ExpParser.makeLexer
-                        (fn _ => valOf (TextIO.inputLine TextIO.stdIn))
-        val dummyEOF = ExpLrVals.Tokens.EOF(0,0)
-        val dummySEMI = ExpLrVals.Tokens.SEMI(0,0)
-        fun loop lexer =
-          let val (result, lexer) = invoke lexer
-              val (nextToken, lexer) = ExpParser.Stream.get lexer
-          in (TextIO.output(TextIO.stdOut,
-                            (">>> " ^ (Term.toString result) ^ " : "
-                             ^ Type.toString (TypeChecker.typecheck Context.empty result) ^ "\n"));
-              if ExpParser.sameToken(nextToken,dummyEOF)
-              then ()
-              else loop lexer)
+
+  fun parse s =
+    let
+        val lexer = ExpParser.makeLexer (fn _ => s)
+        fun parse' lexer =
+          let
+              val dummySEMI = ExpLrVals.Tokens.SEMI(0, 0)
+              val (result : Term.t, lexer') = invoke lexer
+              val (nextToken, lexer'') = ExpParser.Stream.get lexer'
+          in
+              if ExpParser.sameToken(nextToken, dummySEMI)
+              then result
+              else parse' lexer''
           end
-    in loop lexer
+    in
+        parse' lexer
     end
 
-    fun main _ = (parse (); 1)
+  fun parseLoop () =
+    let val dummyEOF = ExpLrVals.Tokens.EOF(0, 0)
+        val input = valOf ( TextIO.output(TextIO.stdOut, "> ")
+                          ; TextIO.flushOut(TextIO.stdOut)
+                          ; TextIO.inputLine TextIO.stdIn)
+        val result = SOME (parse input)
+                     handle ParserState.Parse(s) =>
+	  		                    ((TextIO.print ("Parse error: " ^ s ^ "\n")); NONE)
+	                        | (TypeChecker.TypeError msg) =>
+                            ((TextIO.print msg); NONE)
+	                        | Dynamics.Malformed =>
+                            ((TextIO.print "Something went seriously wrong in UncheckedDynamics!\n") ; NONE)
+
+    in
+        (case result of
+            SOME r => TextIO.output(TextIO.stdOut,
+                                     ((Term.toString r) ^ " : "
+                                      ^ Type.toString (TypeChecker.typecheck Context.empty r) ^ "\n"))
+          | NONE => ();
+         parseLoop ())
+    end
 
 end

@@ -6,10 +6,12 @@ struct
 
   fun newvar s = (s, (counter := !counter + 1; !counter))
 
-  fun equal ((_, n), (_, m)) = n = m
+  fun equal ((_, n) : t, (_, m)) = n = m
 
   fun compare ((_, n), (_, m)) = Int.compare(n, m)
 
   fun toString (s, n) = s ^ "@" ^ (Int.toString n)
+
+  fun toUserString (s, id) = s
 
 end
