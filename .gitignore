@@ -1,3 +1,7 @@
 src/.cm
 src/abt/.cm
 .cm
+repl.cm
+repl.out.x86-darwin
+repl.sh
+repl.sml
