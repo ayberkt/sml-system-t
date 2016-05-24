@@ -2,7 +2,6 @@ signature Exp_TOKENS =
 sig
 type ('a,'b) token
 type svalue
-val EOF:  'a * 'a -> (svalue,'a) token
 val SEMI:  'a * 'a -> (svalue,'a) token
 val UNCHECKED:  'a * 'a -> (svalue,'a) token
 val CHECKED:  'a * 'a -> (svalue,'a) token
@@ -24,6 +23,7 @@ val ZERO:  'a * 'a -> (svalue,'a) token
 val ARRTYPE:  'a * 'a -> (svalue,'a) token
 val NATTYPE:  'a * 'a -> (svalue,'a) token
 val IDENT: (string) *  'a * 'a -> (svalue,'a) token
+val EOF:  'a * 'a -> (svalue,'a) token
 end
 signature Exp_LRVALS=
 sig

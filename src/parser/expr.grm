@@ -15,7 +15,8 @@ val nat = TY.$$(TypeOps.NAT, [])
 (* %header (functor LangLrValsFn (structure Token : TOKEN)) *)
 
 
-%term IDENT of string
+%term EOF
+    | IDENT of string
     | NATTYPE
     | ARRTYPE
     | ZERO
@@ -36,15 +37,16 @@ val nat = TY.$$(TypeOps.NAT, [])
     | CHECKED
     | UNCHECKED
     | SEMI
-    | EOF
 
 %nonterm ty of TY.t
        | exp of T.t
-       | var of Var.t
+       | lambda of T.t
+       | start of T.t
+       | var of T.t
 
 %verbose
 %pos int
-%start exp
+%start start
 %eop EOF SEMI
 %noshift EOF SEMI
 %name Exp
@@ -52,15 +54,26 @@ val nat = TY.$$(TypeOps.NAT, [])
 
 %%
 
+start : exp (exp)
+
+exp : ZERO (T.$$(TermOps.Zero, []))
+    | SUCC LPAREN exp RPAREN (T.$$(TermOps.Succ, [exp1]))
+    | var (var)
+    | LAMBDA lambda (lambda)
+                (* | REC exp *)
+                (* LCURLY *)
+                (* ZERO MAPSTO exp *)
+                (* BAR SUCC LPAREN exp RPAREN WITH exp MAPSTO exp *)
+                (* RCURLY             (T.$$(TermOps.Rec, [exp2, exp3, exp1])) *)
+                (* | exp LPAREN exp RPAREN (T.$$(TermOps.App, [exp1, exp2])) *)
+
 ty : NATTYPE                (nat)
    | ty ARRTYPE ty          ( createArr ty1 ty2 )
 
-exp : var (T.`` var)
-    | ZERO (T.$$(TermOps.Zero, []))
-    | SUCC LPAREN exp RPAREN (T.$$(TermOps.Succ, [exp1]))
-    | REC exp LCURLY ZERO MAPSTO exp BAR SUCC LPAREN exp RPAREN WITH exp MAPSTO exp RCURLY (T.$$(TermOps.Rec, [exp2, exp3, exp1]))
-    | LAMBDA LPAREN var COLON ty RPAREN exp ( createLam var ty exp )
-    (* | LPAREN exp RPAREN (exp) *)
-    (* | exp LPAREN exp RPAREN (T.$$(TermOps.App, [exp1, exp2])) *)
+lambda : LPAREN IDENT COLON ty RPAREN exp (let
+                                              val x = ParserState.addvar IDENT
+                                          in
+                                              createLam x ty exp
+                                          end)
 
-var : IDENT     (ParserState.getvar IDENT)
+var : IDENT     (T.`` (ParserState.getvar IDENT))

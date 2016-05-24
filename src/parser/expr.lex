@@ -1,4 +1,4 @@
-structure Tokens = Tokens
+structure Token = Tokens
 
 type pos = int
 type svalue = Tokens.svalue
@@ -17,7 +17,7 @@ val eof = fn () => Tokens.EOF(!pos,!pos)
 exception Illegal_character of pos
 
 %%
-%header (functor Exp_LexFun(structure Tokens: Exp_TOKENS));
+%header (functor ExpLexFun(structure Tokens: Exp_TOKENS));
 
 alpha=[A-Za-z];
 digit=[0-9];
@@ -31,6 +31,7 @@ ws = [\ \t];
 "z"      => (Tokens.ZERO(!pos, !pos));
 "s"      => (Tokens.SUCC(!pos, !pos));
 ":"      => (Tokens.COLON(!pos,!pos));
+";"      => (Tokens.SEMI(!pos,!pos));
 "nat"    => (Tokens.NATTYPE(!pos,!pos));
 "rec"    => (Tokens.REC(!pos, !pos));
 "with"   => (Tokens.WITH(!pos, !pos));

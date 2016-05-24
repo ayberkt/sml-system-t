@@ -24,13 +24,14 @@ fun getvar id =
 fun addvar id =
    let
       val var = Var.newvar id
-      (*val _ = TextIO.print ("addvar" ^ (Var.toString var) ^ "\n")*)
+      val _ = TextIO.print ("addvar" ^ (Var.toString var) ^ "\n")
    in
      ( (symtable := symbols.insert(!symtable, id, var));
      var
      )
    end
 
-(* fun createLam var t body = T.$$(TermOps.Lam t, [(Term.\\ (var, body))]) *)
+fun createLam (var : Var.t) (t : Type.t) (body : Term.t) : Term.t
+  = T.$$(TermOps.Lam t, [(T.\\ (var, body))])
 
 end
