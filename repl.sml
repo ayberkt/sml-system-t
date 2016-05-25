@@ -28,4 +28,6 @@ struct
       parseLoop' ()
   )
 
+  fun main _ = (parseLoop (); 1)
+
 end

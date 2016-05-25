@@ -6,6 +6,9 @@ exception Parse of string
 fun createLam (var : Var.t, t : TY.t) (body : T.t) : T.t
   = T.$$(TermOps.Lam t, [(T.\\ (var, body))])
 
+fun createApp (f : T.t) (x : T.t) : T.t =
+  T.$$(TermOps.App, [f, x])
+
 fun createArr (t1 : TY.t) (t2: TY.t) : TY.t =
   Type.$$(TypeOps.ARR, [t1, t2])
 
@@ -52,6 +55,8 @@ val nat = TY.$$(TypeOps.NAT, [])
        | lam2 of (Var.t * TY.t)
        | start of T.t
        | var of T.t
+       | function of T.t
+       | arg of T.t
 
 %verbose
 %pos int
@@ -59,21 +64,22 @@ val nat = TY.$$(TypeOps.NAT, [])
 %eop EOF SEMI
 %noshift EOF SEMI
 %name Exp
-%left ARRTYPE
-%right LAMBDA
+%right ARRTYPE
 %%
 
 start : exp (exp)
 
-exp : ZERO (print "Zero found...\n"; T.$$(TermOps.Zero, []))
-    | SUCC LPAREN exp RPAREN (print "Succ found...\n"; T.$$(TermOps.Succ, [exp1]))
-    | var (print "Variable found...\n"; var)
-    | lamexp (let
-                 val result = lamexp
-                 val _ = ParserState.restoretable()
-             in
-                 result
-             end)
+exp : ZERO          %prec ZERO (T.$$(TermOps.Zero, []))
+    | SUCC exp      %prec SUCC (T.$$(TermOps.Succ, [exp1]))
+    | lamexp       (let
+                       val result = lamexp
+                       val _ = ParserState.restoretable()
+                   in
+                       result
+                   end)
+    | function LPAREN arg RPAREN (createApp function arg)
+    | var           (var)
+    | LPAREN exp RPAREN  (exp)
     (* | lamexp (createLam lamexp) *)
                 (* | REC exp *)
                 (* LCURLY *)
@@ -82,8 +88,12 @@ exp : ZERO (print "Zero found...\n"; T.$$(TermOps.Zero, []))
                 (* RCURLY             (T.$$(TermOps.Rec, [exp2, exp3, exp1])) *)
                 (* | exp LPAREN exp RPAREN (T.$$(TermOps.App, [exp1, exp2])) *)
 
-ty : NATTYPE                (nat)
-   | ty ARRTYPE ty          ( createArr ty1 ty2 )
+
+function : exp (exp)
+arg : exp (exp)
+
+ty : ty ARRTYPE ty          %prec ARRTYPE (createArr ty1 ty2 )
+   | NATTYPE                              (nat)
 
 lamexp : lamstart lam1 (lam1)
 
