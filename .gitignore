@@ -1,4 +1,4 @@
 src/.cm
 src/abt/.cm
 .cm
-repl.out.x86-darwin
+*.out.x86-darwin
