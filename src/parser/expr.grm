@@ -3,19 +3,26 @@ structure TY = Type
 (* structure TLC = TopLevelCommands *)
 exception Parse of string
 
-fun createLam (var : Var.t, t : TY.t, body : T.t) : T.t
+fun createLam (var : Var.t, t : TY.t) (body : T.t) : T.t
   = T.$$(TermOps.Lam t, [(T.\\ (var, body))])
 
 fun createArr (t1 : TY.t) (t2: TY.t) : TY.t =
   Type.$$(TypeOps.ARR, [t1, t2])
 
+(* fun createlet (e1,var) e2 =  T.$$(TermOps.Let, [e1, T.\\(var, e2)]) *)
+
 val nat = TY.$$(TypeOps.NAT, [])
 
 %%
-(* %header (functor LangLrValsFn (structure Token : TOKEN)) *)
+%header (functor ExpLrValsFun (structure Token : TOKEN))
 
 
 %term EOF
+    | LET
+    | VAL
+    | EQUALS
+    | IN
+    | END
     | IDENT of string
     | NATTYPE
     | ARRTYPE
@@ -31,7 +38,6 @@ val nat = TY.$$(TypeOps.NAT, [])
     | RCURLY
     | BAR
     | WITH
-    | END
     | STEP
     | EVAL
     | CHECKED
@@ -40,7 +46,10 @@ val nat = TY.$$(TypeOps.NAT, [])
 
 %nonterm ty of TY.t
        | exp of T.t
-       | lambda of Var.t * TY.t * T.t
+       | lamexp of T.t
+       | lamstart of unit
+       | lam1 of T.t
+       | lam2 of (Var.t * TY.t)
        | start of T.t
        | var of T.t
 
@@ -51,20 +60,21 @@ val nat = TY.$$(TypeOps.NAT, [])
 %noshift EOF SEMI
 %name Exp
 %left ARRTYPE
-
+%right LAMBDA
 %%
 
 start : exp (exp)
 
-exp : ZERO (T.$$(TermOps.Zero, []))
-    | SUCC LPAREN exp RPAREN (T.$$(TermOps.Succ, [exp1]))
-    | var (print "Variable...\n"; var)
-    | LAMBDA lambda (let
-                        val f = createLam lambda
-                        (* val _ = ParserState.restoretable(); *)
-                    in
-                        f
-                    end)
+exp : ZERO (print "Zero found...\n"; T.$$(TermOps.Zero, []))
+    | SUCC LPAREN exp RPAREN (print "Succ found...\n"; T.$$(TermOps.Succ, [exp1]))
+    | var (print "Variable found...\n"; var)
+    | lamexp (let
+                 val result = lamexp
+                 val _ = ParserState.restoretable()
+             in
+                 result
+             end)
+    (* | lamexp (createLam lamexp) *)
                 (* | REC exp *)
                 (* LCURLY *)
                 (* ZERO MAPSTO exp *)
@@ -75,12 +85,16 @@ exp : ZERO (T.$$(TermOps.Zero, []))
 ty : NATTYPE                (nat)
    | ty ARRTYPE ty          ( createArr ty1 ty2 )
 
-lambda : LPAREN IDENT COLON ty RPAREN exp (let
-                                              val _ = ParserState.savetable();
-                                              val x = ParserState.addvar IDENT
-                                          in
-                                              (x, ty, exp)
-                                          end)
+lamexp : lamstart lam1 (lam1)
 
-var : IDENT     (T.`` (ParserState.getvar IDENT
-                       handle err => raise err))
+lamstart : LAMBDA                  (ParserState.savetable())
+
+lam1 : LPAREN lam2 RPAREN exp             ( createLam lam2 exp )
+
+lam2 : IDENT COLON ty (let
+                        val var = ParserState.addvar IDENT
+                      in
+                          (var,ty)
+                      end)
+
+var : IDENT     (T.`` (ParserState.getvar IDENT))

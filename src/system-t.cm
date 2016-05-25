@@ -22,3 +22,4 @@ Group is
   parser/parserstate.sml
   parser/exp-lexer.sml
   parser/exp-parser.sml
+  parser/parser.sml
