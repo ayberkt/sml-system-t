@@ -16,15 +16,17 @@ struct
     case Term.out e of
          (* ------------------------------- (9.2a) *)
          (*             z val                      *)
-         Term.$(TermOps.Zero, _)      => VAL
+         Term.$(TermOps.Zero, _)           => VAL
+      |  Term.$(TermOps.Lam _, [body])    => (VAL)
       |  Term.$(TermOps.Succ, [e])    => succ e
       | Term.$(TermOps.App, [e1, e2]) => app e1 e2
+      | _ => raise Malformed
   and app (e1 : Term.t) (e2 : Term.t) : d =
     (case trystep e1 of
          VAL =>
          (case trystep e2 of
               VAL =>
-              (case (Term.out e2) of
+              (case (Term.out e1) of
                    (*             e2 val                       *)
                    (* --------------------------------- (9.3d) *)
                    (*  ap(lam{_}(x.e); e2) ↦ [e2/x] e          *)
@@ -33,6 +35,7 @@ struct
                         Term.\ (x : Var.t, e : Term.t) =>
                         STEP(Term.subst e2 x e)
                    )
+                 | _ => (print "Hello!"; raise Malformed)
               )
             (*  e1 val              e2 ↦ e2'          *)
             (* ------------------------------- (9.3c) *)
