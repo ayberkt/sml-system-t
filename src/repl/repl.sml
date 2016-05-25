@@ -39,7 +39,7 @@ struct
         val result = safeParse input
     in
         (case safeParse input of
-             SOME r => print (Term.toString (Dynamics.eval r) ^ "\n")
+             SOME r => print (Term.toString (Dynamics.eval r) ^ "\n\n")
            | NONE => ());
          evalLoop' ()
     end
@@ -49,6 +49,6 @@ struct
       evalLoop' ()
   )
 
-  fun main _ = (parseLoop (); 1)
+  fun main _ = (evalLoop (); 1)
 
 end
