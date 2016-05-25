@@ -21,11 +21,6 @@ val nat = TY.$$(TypeOps.NAT, [])
 
 
 %term EOF
-    | LET
-    | VAL
-    | EQUALS
-    | IN
-    | END
     | IDENT of string
     | NATTYPE
     | ARRTYPE
@@ -41,10 +36,6 @@ val nat = TY.$$(TypeOps.NAT, [])
     | RCURLY
     | BAR
     | WITH
-    | STEP
-    | EVAL
-    | CHECKED
-    | UNCHECKED
     | SEMI
 
 %nonterm ty of TY.t
@@ -57,6 +48,7 @@ val nat = TY.$$(TypeOps.NAT, [])
        | var of T.t
        | function of T.t
        | arg of T.t
+       | app of T.t
 
 %verbose
 %pos int
@@ -64,22 +56,22 @@ val nat = TY.$$(TypeOps.NAT, [])
 %eop EOF SEMI
 %noshift EOF SEMI
 %name Exp
-%right ARRTYPE
+%right ARRTYPE NATTYPE
 %%
 
 start : exp (exp)
 
-exp : ZERO          %prec ZERO (T.$$(TermOps.Zero, []))
-    | SUCC exp      %prec SUCC (T.$$(TermOps.Succ, [exp1]))
+exp : ZERO              (T.$$(TermOps.Zero, []))
+    | SUCC exp          (T.$$(TermOps.Succ, [exp1]))
+    | LPAREN exp RPAREN (exp)
     | lamexp       (let
                        val result = lamexp
                        val _ = ParserState.restoretable()
                    in
                        result
                    end)
-    | function LPAREN arg RPAREN (createApp function arg)
+    | app           (app)
     | var           (var)
-    | LPAREN exp RPAREN  (exp)
     (* | lamexp (createLam lamexp) *)
                 (* | REC exp *)
                 (* LCURLY *)
@@ -89,10 +81,11 @@ exp : ZERO          %prec ZERO (T.$$(TermOps.Zero, []))
                 (* | exp LPAREN exp RPAREN (T.$$(TermOps.App, [exp1, exp2])) *)
 
 
+app : function LPAREN arg RPAREN (createApp function arg)
 function : exp (exp)
 arg : exp (exp)
 
-ty : ty ARRTYPE ty          %prec ARRTYPE (createArr ty1 ty2 )
+ty : ty ARRTYPE ty                        (createArr ty1 ty2 )
    | NATTYPE                              (nat)
 
 lamexp : lamstart lam1 (lam1)

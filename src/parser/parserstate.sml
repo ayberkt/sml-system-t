@@ -17,18 +17,14 @@ fun savetable () = ((stack := !symtable :: !stack); ())
 fun restoretable () = ((symtable := hd(!stack));(stack := tl (!stack)); ())
 
 fun getvar id =
-  let
-      val _ = print ("getvar called with " ^ id ^ "\n")
-  in
-      case symbols.find(!symtable, id) of
-          SOME (v) => v
-        | _ => raise Parse("Undefined identifier: " ^ id)
-  end
+  case symbols.find(!symtable, id) of
+      SOME (v) => v
+    | _ => raise Parse("Undefined identifier: " ^ id)
 
 fun addvar id =
    let
       val var = Var.newvar id
-      val _ = TextIO.print ("addvar" ^ (Var.toString var) ^ "\n")
+      (* val _ = TextIO.print ("addvar" ^ (Var.toString var) ^ "\n") *)
    in
      ( (symtable := symbols.insert(!symtable, id, var));
      var

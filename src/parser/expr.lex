@@ -28,10 +28,6 @@ ws = [\ \t];
 %%
 \n       => (pos := (!pos) + 1; lex());
 {ws}+    => (lex());
-"let"    => (Tokens.LET(!pos, !pos));
-"in"     => (Tokens.IN(!pos, !pos));
-"val"    => (Tokens.VAL(!pos, !pos));
-"="      => (Tokens.EQUALS(!pos, !pos));
 "z"      => (Tokens.ZERO(!pos, !pos));
 "s"      => (Tokens.SUCC(!pos, !pos));
 ":"      => (Tokens.COLON(!pos,!pos));
