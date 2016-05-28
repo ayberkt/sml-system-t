@@ -2,3 +2,4 @@ src/.cm
 src/abt/.cm
 .cm
 *.out.x86-darwin
+bin

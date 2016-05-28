@@ -49,6 +49,6 @@ struct
       evalLoop' ()
   )
 
-  fun main _ = (evalLoop (); 1)
+  fun main _ = (parseLoop (); 1)
 
 end
