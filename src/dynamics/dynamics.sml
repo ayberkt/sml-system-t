@@ -18,10 +18,11 @@ struct
     case Term.out e of
          (* ------------------------------- (9.2a) *)
          (*             z val                      *)
-         Term.$(TermOps.Zero, _)           => VAL
-      |  Term.$(TermOps.Lam _, [body])    => (VAL)
+         Term.$(TermOps.Zero, _)         => VAL
+      |  Term.$(TermOps.Lam _, [body])   => VAL
       |  Term.$(TermOps.Succ, [e])    => succ e
-      | Term.$(TermOps.App, [e1, e2]) => app e1 e2
+      |  Term.$(TermOps.App, [e1, e2]) => app e1 e2
+      |  Term.$(TermOps.Rec, [e0, e1, e]) => recurse e0 e1 e
       | _ => raise Malformed
   and app (e1 : Term.t) (e2 : Term.t) : d =
     (case trystep e1 of
@@ -36,7 +37,7 @@ struct
                    (case Term.out e' of
                         Term.\ (x : Var.t, e : Term.t) =>
                         STEP(Term.subst e2 x e)
-                   )
+                     | _ => raise Malformed )
                  | _ => (print "Hello!"; raise Malformed)
               )
             (*  e1 val              e2 ↦ e2'          *)
@@ -60,17 +61,30 @@ struct
            (* ------------------------------- (9.3a) *)
            (*          s(e) ↦ s(e')                  *)
         |  STEP(e') => STEP(Term.$$(TermOps.Succ, [e'])))
-  and recurse e0 e1 e =
+  and recurse e0 xye1 e =
       case trystep e of
            (*                    e ↦ e'                            *)
            (* --------------------------------------------- (9.3e) *)
            (*    rec(e0; x.y.e1)(e) ↦ rec(e0; x.y.e1)(e')          *)
-           STEP(e') => STEP(makeRec e0 e1 e')
+           STEP(e') => STEP(makeRec e0 xye1 e')
          | VAL => (case Term.out e of
                        (* ------------------------------- (9.3f) *)
                        (*     rec(e0; x.y.e1)(z) ↦ z             *)
                        Term.$(TermOps.Zero, []) => STEP(e0)
-                    | _ => VAL )
+                     | Term.$(TermOps.Succ, [e']) =>
+                       (case Term.out xye1 of
+                            Term.\ (x, ye1) =>
+                            (case Term.out ye1 of
+                                 Term.\ (y, e1) =>
+                                 let
+                                     val e1'  = Term.subst e' x e1
+                                     val e1''   = Term.subst (makeRec e0 xye1 e') y e1'
+                                 in
+                                         STEP(e1'')
+                                 end
+                               | _ => raise Malformed)
+                          | _ => raise Malformed)
+                     | _ => raise Malformed)
 
   fun eval e =
     case trystep e of
