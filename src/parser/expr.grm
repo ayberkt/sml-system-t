@@ -6,13 +6,19 @@ exception Parse of string
 fun createLam (var : Var.t, t : TY.t) (body : T.t) : T.t
   = T.$$(TermOps.Lam t, [(T.\\ (var, body))])
 
+fun createRec (e : Term.t) (e0 : Term.t, x, y, e1body : Term.t) =
+  let
+      val e1' : Term.t = T.\\ (y, e1body)
+      val e1 : Term.t = T.\\ (x, e1')
+  in
+      T.$$(TermOps.Rec, [e0, e1, e])
+  end
+
 fun createApp (f : T.t) (x : T.t) : T.t =
   T.$$(TermOps.App, [f, x])
 
 fun createArr (t1 : TY.t) (t2: TY.t) : TY.t =
   Type.$$(TypeOps.ARR, [t1, t2])
-
-(* fun createlet (e1,var) e2 =  T.$$(TermOps.Let, [e1, T.\\(var, e2)]) *)
 
 val nat = TY.$$(TypeOps.NAT, [])
 
@@ -44,6 +50,13 @@ val nat = TY.$$(TypeOps.NAT, [])
        | lamstart of unit
        | lam1 of T.t
        | lam2 of (Var.t * TY.t)
+       | recstart of unit
+       | recexp of T.t
+       | rec1 of T.t
+       | rec2 of T.t * Var.t * Var.t * T.t
+       | rec3 of Var.t * Var.t * T.t
+       | rec4 of Var.t * T.t
+       | rec5 of T.t
        | start of T.t
        | var of T.t
        | function of T.t
@@ -72,14 +85,12 @@ exp : ZERO              (T.$$(TermOps.Zero, []))
                    end)
     | app           (app)
     | var           (var)
-    (* | lamexp (createLam lamexp) *)
-                (* | REC exp *)
-                (* LCURLY *)
-                (* ZERO MAPSTO exp *)
-                (* BAR SUCC LPAREN exp RPAREN WITH exp MAPSTO exp *)
-                (* RCURLY             (T.$$(TermOps.Rec, [exp2, exp3, exp1])) *)
-                (* | exp LPAREN exp RPAREN (T.$$(TermOps.App, [exp1, exp2])) *)
-
+    | recexp       (let
+                       val result = recexp
+                       val _ = ParserState.restoretable()
+                   in
+                       result
+                   end)
 
 app : function LPAREN arg RPAREN (createApp function arg)
 function : exp (exp)
@@ -95,9 +106,38 @@ lamstart : LAMBDA                  (ParserState.savetable())
 lam1 : LPAREN lam2 RPAREN exp             ( createLam lam2 exp )
 
 lam2 : IDENT COLON ty (let
-                        val var = ParserState.addvar IDENT
-                      in
-                          (var,ty)
+                         val var = ParserState.addvar IDENT
+                       in
+                         (var,ty)
                       end)
+
+recexp : recstart rec1 (rec1)
+
+recstart  : REC (ParserState.savetable())
+
+rec1 : exp rec2 (createRec exp rec2)
+
+rec2 : LCURLY ZERO MAPSTO exp rec3 (let
+                                       val e0 = exp
+                                       val (x, y, e1) = rec3
+                                   in
+                                       (e0, x, y, e1)
+                                   end)
+
+rec3 : BAR SUCC LPAREN IDENT RPAREN rec4  (let
+                                             val x = ParserState.addvar IDENT
+                                             val (y, e1) = rec4
+                                           in
+                                             (x, y, e1)
+                                           end)
+
+rec4 : WITH IDENT rec5 (let
+                          val y = ParserState.addvar IDENT
+                          val e1 = rec5
+                        in
+                          (y, e1)
+                        end)
+
+rec5 : MAPSTO exp RCURLY (exp)
 
 var : IDENT     (T.`` (ParserState.getvar IDENT))
