@@ -22,8 +22,8 @@ struct
              SOME term =>
              (case hdl (TypeChecker.typecheck Context.empty) term of
                  SOME tau => print ((Term.toString term) ^ " : " ^ (Type.toString tau) ^ "\n")
-               | NONE => (); loop f)
-          | NONE => raise (Fail "unknown error")
+               | NONE => ())
+           | NONE => (); loop f
     end
 
 
