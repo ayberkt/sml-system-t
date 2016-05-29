@@ -7,3 +7,4 @@ all:
 clean:
 	rm -rf bin/.heapimg*
 	rm -rf bin/repl-make.sml
+	rm -rf src/repl/.cm
