@@ -56,7 +56,7 @@ struct
                   then e1Ty
                   else
                       let
-                          val message = (Type.toString e1Ty ^ "not equal to" ^ Type.toString t)
+                          val message = (Type.toString e1Ty ^ " not equal to " ^ Type.toString eTy)
                       in
                           raise TypeError message
                       end
