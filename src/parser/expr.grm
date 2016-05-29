@@ -54,12 +54,11 @@ val nat = TY.$$(TypeOps.NAT, [])
        | recexp of T.t
        | rec1 of T.t
        | rec2 of T.t * Var.t * Var.t * T.t
-       | rec25 of T.t
        | rec3 of Var.t * Var.t * T.t
-       | rec35 of Var.t
-       | rec4 of Var.t * T.t
-       | rec45 of Var.t
-       | rec5 of T.t
+       | rec4 of Var.t
+       | rec5 of Var.t * T.t
+       | rec6 of Var.t
+       | rec7 of T.t
        | start of T.t
        | var of T.t
        | function of T.t
@@ -120,33 +119,29 @@ recstart  : REC (ParserState.savetable())
 
 rec1 : exp rec2 (createRec exp rec2)
 
-rec2 : LCURLY ZERO MAPSTO rec25 rec3 (let
-                                        val (x, y, e) = rec3
-                                        val e0 = rec25
-                                      in
-                                        (e0, x, y, e)
-                                      end)
+rec2 : LCURLY ZERO MAPSTO exp rec3 (let
+                                   val (x, y, e) = rec3
+                               in
+                                   (exp, x, y, e)
+                               end)
 
-rec25 : exp                (exp)
-
-
-rec3 : BAR SUCC LPAREN rec35 RPAREN rec4  (let
-                                             val x = rec35
-                                             val (y, e1) = rec4
+rec3 : BAR SUCC LPAREN rec4 RPAREN rec5  (let
+                                             val x = rec4
+                                             val (y, e1) = rec5
                                            in
                                              (x, y, e1)
                                            end)
 
-rec35 : IDENT (ParserState.addvar IDENT)
+rec4 : IDENT (ParserState.addvar IDENT)
 
-rec4 : WITH rec45 rec5 (let
-                          val e1 = rec5
+rec5 : WITH rec6 rec7 (let
+                          val e1 = rec7
                         in
-                          (rec45, e1)
+                          (rec6, e1)
                         end)
 
-rec45 : IDENT (ParserState.addvar IDENT)
+rec6 : IDENT (ParserState.addvar IDENT)
 
-rec5 : MAPSTO exp RCURLY (exp)
+rec7 : MAPSTO exp RCURLY (exp)
 
 var : IDENT     (T.`` (ParserState.getvar IDENT))
