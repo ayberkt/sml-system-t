@@ -18,6 +18,8 @@ should find an executable `bin/repl`. Here is an example repl session:
 > (\(x:nat) s(x))(s(s(z)))
 Step: s(s(s(z)))
 s(s(s(z))) : nat
+> \ (x:nat) s(s(x))
+lam{nat}(x@2.s(s(x@2))) : arr(nat; nat)
 > rec s(s(s(z))) {z => z | s(u) with v => s(s(s(v)))}
 Step: s(s(s(rec(z; x@7.x@8.s(s(s(x@8))); s(s(z))))))
 Step: s(s(s(s(s(s(rec(z; x@11.x@12.s(s(s(x@12))); s(z))))))))
