@@ -10,7 +10,7 @@ found in `src/statics/typechecker.sml` and all dynamics rules in
 
 ## Building
 
-You `smlnj` to build along with `ml-lex` and `ml-yacc`. Given that you have
+You need `smlnj` to build along with `ml-lex` and `ml-yacc`. Given that you have
 these installed, just `make` in the project directory. If all goes well you
 should find an executable `bin/repl`. Here is an example repl session:
 
