@@ -7,6 +7,8 @@ struct
   datatype d = STEP of Term.t | VAL
   datatype D = Step of Term.t | Val | Err
 
+  fun makeRec e0 e1 e = Term.$$(TermOps.Rec, [e0, e1, e])
+
   fun view d1 =
     case d1 of
         STEP t1 => Step t1
@@ -49,15 +51,24 @@ struct
          STEP(Term.$$(TermOps.App, [e1', e2]))
     )
   and succ (e) : d =
-    (case trystep e of
-         (*             e val                      *)
-         (* ------------------------------- (9.2b) *)
-         (*            s(e) val                    *)
-         VAL => VAL
-         (*             e ↦ e'                     *)
-         (* ------------------------------- (9.3a) *)
-         (*          s(e) ↦ s(e')                  *)
-      |  STEP(e') => STEP(Term.$$(TermOps.Succ, [e'])))
+      (case trystep e of
+           (*             e val                      *)
+           (* ------------------------------- (9.2b) *)
+           (*            s(e) val                    *)
+           VAL => VAL
+           (*             e ↦ e'                     *)
+           (* ------------------------------- (9.3a) *)
+           (*          s(e) ↦ s(e')                  *)
+        |  STEP(e') => STEP(Term.$$(TermOps.Succ, [e'])))
+  and recurse e0 e1 e =
+      case trystep e of
+           (*                    e ↦ e'                            *)
+           (* --------------------------------------------- (9.3e) *)
+           (*    rec(e0; x.y.e1)(e) ↦ rec(e0; x.y.e1)(e')          *)
+           STEP(e') => STEP(makeRec e0 e1 e')
+         | VAL => (case Term.out e of
+                       Term.$(TermOps.Zero, []) => STEP(e0)
+                    | _ => VAL )
 
   fun eval e =
     case trystep e of
