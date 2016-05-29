@@ -4,11 +4,12 @@ struct
   fun hdl f input =
     SOME (f input)
     handle ParserState.Parse(s) =>
-	  		   ((TextIO.print ("Parse error: " ^ s ^ "\n")); NONE)
+	  		   ((TextIO.print (s ^ "\n")); NONE)
 	       | (TypeChecker.TypeError msg) =>
-           ((TextIO.print msg); NONE)
+           ((TextIO.print ("Type error: " ^ msg ^ ".\n")); NONE)
 	       | Dynamics.Malformed =>
            ((TextIO.print "Something went seriously wrong in UncheckedDynamics!\n") ; NONE)
+         | _ => (TextIO.print "Unknown error\n"; NONE)
 
   fun loop f =
     let val dummyEOF = ExpLrVals.Tokens.EOF(0, 0)
@@ -17,12 +18,12 @@ struct
                           ; TextIO.inputLine TextIO.stdIn)
         val result = f input
     in
-        (case result of
-             SOME r => TextIO.output(TextIO.stdOut,
-                                     ((Term.toString r) ^ " : "
-                                      ^ Type.toString (TypeChecker.typecheck Context.empty r) ^ "\n"))
-           | NONE => ();
-         loop f)
+        case result of
+             SOME term =>
+             (case hdl (TypeChecker.typecheck Context.empty) term of
+                 SOME tau => print ((Term.toString term) ^ " : " ^ (Type.toString tau) ^ "\n")
+               | NONE => (); loop f)
+          | NONE => raise (Fail "unknown error")
     end
 
 

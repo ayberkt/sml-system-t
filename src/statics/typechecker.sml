@@ -11,7 +11,7 @@ struct
       let
           val nat : Type.t = Type.$$((TypeOps.NAT), [] : Type.t list)
       in
-          (case Term.out e of
+          case Term.out e of
                (* ------------------------------- (9.1a) *)
                (*        𝚪, x : t ⊢ x : t                *)
                Term.`(x) =>
@@ -29,7 +29,7 @@ struct
             | Term.$(TermOps.Succ, [x]) =>
               if (equiv (typecheck ctx x) nat)
               then nat
-              else raise TypeError "s can be only applied to a nat."
+              else raise TypeError "s can be only applied to a nat"
 
               (*  𝚪 ⊢ e : nat  𝚪 ⊢ e0 : t  𝚪, x : nat, y : t ⊢ e1 : t        *)
               (* ---------------------------------------------------- (9.1d) *)
@@ -41,7 +41,7 @@ struct
                   val e1Ty =
                       case Term.out e1 of
                           Term.\ (x, body') =>
-                          case Term.out body' of
+                          (case Term.out body' of
                               Term.\ (y, body) =>
                               let
                                   val ctx'  = Context.insert(ctx, x, nat)
@@ -49,6 +49,8 @@ struct
                               in
                                   typecheck ctx'' body
                               end
+                              | _ => raise TypeError "type mismatch")
+                        | _ => raise TypeError "type mismatch"
               in
                   if equiv e1Ty t andalso equiv eTy nat
                   then e1Ty
@@ -80,13 +82,13 @@ struct
                   val [t1, t2] =
                       case Type.out (typecheck ctx f) of
                           Type.$(TypeOps.ARR, [t1, t2]) => [t1, t2]
-                        | _ => raise TypeError "Operator must have arrow type."
+                        | _ => raise TypeError "function must have arrow type"
                   val xTy = typecheck ctx x
               in
                   if equiv xTy t1
                   then t2
-                  else raise TypeError "Operand type does not match the operator domain."
+                  else raise TypeError "operand type does not match the operator domain"
               end
-            | _ => raise TypeError "no rule applies")
+            | _ => raise TypeError "no rule applies"
       end
 end
