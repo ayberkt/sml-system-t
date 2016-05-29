@@ -54,8 +54,11 @@ val nat = TY.$$(TypeOps.NAT, [])
        | recexp of T.t
        | rec1 of T.t
        | rec2 of T.t * Var.t * Var.t * T.t
+       | rec25 of T.t
        | rec3 of Var.t * Var.t * T.t
+       | rec35 of Var.t
        | rec4 of Var.t * T.t
+       | rec45 of Var.t
        | rec5 of T.t
        | start of T.t
        | var of T.t
@@ -74,7 +77,7 @@ val nat = TY.$$(TypeOps.NAT, [])
 
 start : exp (exp)
 
-exp : ZERO              (T.$$(TermOps.Zero, []))
+exp : ZERO              (print "Zero found...\n"; T.$$(TermOps.Zero, []))
     | SUCC exp          (T.$$(TermOps.Succ, [exp1]))
     | LPAREN exp RPAREN (exp)
     | lamexp       (let
@@ -117,26 +120,32 @@ recstart  : REC (ParserState.savetable())
 
 rec1 : exp rec2 (createRec exp rec2)
 
-rec2 : LCURLY ZERO MAPSTO exp rec3 (let
-                                       val e0 = exp
-                                       val (x, y, e1) = rec3
-                                   in
-                                       (e0, x, y, e1)
-                                   end)
+rec2 : LCURLY ZERO MAPSTO rec25 rec3 (let
+                                        val (x, y, e) = rec3
+                                        val e0 = rec25
+                                      in
+                                        (e0, x, y, e)
+                                      end)
 
-rec3 : BAR SUCC LPAREN IDENT RPAREN rec4  (let
-                                             val x = ParserState.addvar IDENT
+rec25 : exp                (exp)
+
+
+rec3 : BAR SUCC LPAREN rec35 RPAREN rec4  (let
+                                             val x = rec35
                                              val (y, e1) = rec4
                                            in
                                              (x, y, e1)
                                            end)
 
-rec4 : WITH IDENT rec5 (let
-                          val y = ParserState.addvar IDENT
+rec35 : IDENT (ParserState.addvar IDENT)
+
+rec4 : WITH rec45 rec5 (let
                           val e1 = rec5
                         in
-                          (y, e1)
+                          (rec45, e1)
                         end)
+
+rec45 : IDENT (ParserState.addvar IDENT)
 
 rec5 : MAPSTO exp RCURLY (exp)
 
