@@ -36,3 +36,8 @@ s(s(s(s(s(s(s(s(s(z))))))))) : nat
 ```
 
 Note that instead of ↪ we use =>.
+
+I have followed the homework solutions to CMU's 15-312. The ABT library is
+almost directly taken from the solutions that can be found on the
+[course website](https://www.cs.cmu.edu/~rwh/courses/ppl/) as well as some of
+the other files (e.g. `src/parser/parsestates.sml`).
