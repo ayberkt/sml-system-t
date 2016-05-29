@@ -47,6 +47,6 @@ struct
      | A.\ (x, e) => (A.Variable.toString x) ^ "." ^ (toString e)
   and toStrings [] = ""
     | toStrings [e] = toString e
-    | toStrings (e :: es) = (toString e) ^ ", " ^ (toStrings es)
+    | toStrings (e :: es) = (toString e) ^ "; " ^ (toStrings es)
 
 end
