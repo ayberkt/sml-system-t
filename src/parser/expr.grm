@@ -77,7 +77,7 @@ val nat = TY.$$(TypeOps.NAT, [])
 
 start : exp (exp)
 
-exp : ZERO              (print "Zero found...\n"; T.$$(TermOps.Zero, []))
+exp : ZERO              (T.$$(TermOps.Zero, []))
     | SUCC exp          (T.$$(TermOps.Succ, [exp1]))
     | LPAREN exp RPAREN (exp)
     | lamexp       (let

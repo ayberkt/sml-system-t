@@ -24,7 +24,7 @@ fun getvar id =
 fun addvar id =
    let
       val var = Var.newvar id
-      val _ = TextIO.print ("addvar" ^ (Var.toString var) ^ "\n")
+      (* val _ = TextIO.print ("addvar" ^ (Var.toString var) ^ "\n") *)
    in
      ( (symtable := symbols.insert(!symtable, id, var));
      var
