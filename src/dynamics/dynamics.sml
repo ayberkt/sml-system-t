@@ -67,6 +67,8 @@ struct
            (*    rec(e0; x.y.e1)(e) ↦ rec(e0; x.y.e1)(e')          *)
            STEP(e') => STEP(makeRec e0 e1 e')
          | VAL => (case Term.out e of
+                       (* ------------------------------- (9.3f) *)
+                       (*     rec(e0; x.y.e1)(z) ↦ z             *)
                        Term.$(TermOps.Zero, []) => STEP(e0)
                     | _ => VAL )
 
