@@ -40,7 +40,7 @@ struct
                         Term.\ (x : Var.t, e : Term.t) =>
                         STEP(Term.subst e2 x e)
                      | _ => raise Malformed )
-                 | _ => (print "Hello!"; raise Malformed)
+                 | _ => raise Malformed
               )
             (*  e1 val              e2 ↦ e2'          *)
             (* ------------------------------- (9.3c) *)
