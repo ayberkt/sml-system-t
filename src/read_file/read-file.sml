@@ -35,4 +35,14 @@ struct
   in
     (printLn o Term.toString) (evalFile file)
   end
+
+  fun main (prog_name, args) =
+    if length args = 2
+    then
+      let
+        val file = List.nth(args, 1)
+      in
+        processFile file; 1
+      end
+    else ( print "Please provide exactly one file name."; 0 )
 end

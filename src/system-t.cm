@@ -23,6 +23,3 @@ Group is
   parser/exp-lexer.sml
   parser/exp-parser.sml
   parser/parser.sml
-
-  read_file/read-file.sig
-  read_file/read-file.sml
