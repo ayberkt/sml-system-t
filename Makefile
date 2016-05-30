@@ -1,4 +1,6 @@
-all:
+all: file-reader repl
+
+file-reader:
 	mkdir -p bin
 	echo 'CM.make "$(shell pwd)/src/read_file/read-file.cm";' > bin/file-make.sml
 	echo 'SMLofNJ.exportFn ("$(shell pwd)/bin/.system-t.heapimg", FileReader.main)' >> bin/file-make.sml
