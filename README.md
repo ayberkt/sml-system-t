@@ -8,13 +8,15 @@ The aim is to closely follow the description in PFPL. All typing rules can be
 found in `src/statics/typechecker.sml` and all dynamics rules in
 `src/dynamics/dynamics.sml` somewhere close to the corresponding lines of code.
 
-## Building
+## Building and running
 
 You need `smlnj` to build along with `ml-lex` and `ml-yacc`. Given that you have
 these installed, just `make` in the project directory. If all goes well you
-should find an executable `bin/repl`. Here is an example repl session:
+should find the executables `bin/system-t` and `bin/repl`. Here is an example
+repl session:
 
 ```
+$ ./bin/repl
 > (\(x:nat) s(x))(s(s(z)))
 Step: s(s(s(z)))
 s(s(s(z))) : nat
@@ -33,6 +35,15 @@ Step: s(s(s(s(s(s(rec(z; x@11.x@12.s(s(s(x@12))); s(z))))))))
 Step: s(s(s(s(s(s(s(s(s(rec(z; x@15.x@16.s(s(s(x@16))); z))))))))))
 Step: s(s(s(s(s(s(s(s(s(z)))))))))
 s(s(s(s(s(s(s(s(s(z))))))))) : nat
+```
+
+Using the `bin/system-t` executable you can execute the __T__ program in a file.
+There is a sample program in `sample.t`. Executing it yields the following
+result.
+
+```
+$ ./bin/system-t sample.t
+s(s(s(s(z))))
 ```
 
 Note that instead of ↪ we use =>.
