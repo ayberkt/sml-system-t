@@ -93,6 +93,6 @@ struct
 
   fun eval e =
     case trystep e of
-        STEP e' => (print ("Step: " ^ Term.toString e' ^ "\n"); eval e')
+        STEP e' => eval e'
       | VAL => e
 end

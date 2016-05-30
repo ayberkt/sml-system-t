@@ -1,4 +1,5 @@
 signature FILE_READER =
 sig
-  processFile : string -> Term.t
+  val evalFile : string -> Term.t
+  val processFile : string -> unit
 end
