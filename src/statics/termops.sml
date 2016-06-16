@@ -5,21 +5,24 @@ struct
     Zero
   | Succ
   | Rec
+  | Let
   | Lam of Type.t
   | App
 
   fun arity Zero     = []
     | arity Succ     = [0]
     | arity Rec      = [0, 2, 0]
+    | arity Let      = [0, 1]
     | arity (Lam _)  = [1]
     | arity App      = [0, 0]
 
-  fun equal (Zero, Zero)     = true
-    | equal (Succ, Succ)     = true
-    | equal (Rec,  Rec)      = true
+  fun equal (Zero, Zero)      = true
+    | equal (Succ, Succ)      = true
+    | equal (Rec,  Rec)       = true
+    | equal (Let, Let)        = true
     | equal (Lam t1,  Lam t2) = Type.aequiv(t1, t2)
-    | equal (App,  App)      = true
-    | equal _                = false
+    | equal (App,  App)       = true
+    | equal _                 = false
 
   fun toString Zero    = "z"
     | toString Succ    = "s"

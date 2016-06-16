@@ -6,6 +6,9 @@ exception Parse of string
 fun createLam (var : Var.t, t : TY.t) (body : T.t) : T.t
   = T.$$(TermOps.Lam t, [(T.\\ (var, body))])
 
+fun createLet (e1,var) e2 =  T.$$(TermOps.Let, [e1, T.\\(var, e2)])
+
+
 fun createRec (e : Term.t) (e0 : Term.t, x, y, e1body : Term.t) =
   let
       val e1' : Term.t = T.\\ (y, e1body)
@@ -33,6 +36,11 @@ val nat = TY.$$(TypeOps.NAT, [])
     | ZERO
     | SUCC
     | REC
+    | LET
+    | VAL
+    | EQUALS
+    | IN
+    | END
     | LAMBDA
     | COLON
     | MAPSTO
@@ -59,6 +67,11 @@ val nat = TY.$$(TypeOps.NAT, [])
        | rec5 of Var.t * T.t
        | rec6 of Var.t
        | rec7 of T.t
+       | letexp of T.t
+       | letstart of unit
+       | let1 of T.t
+       | let2 of T.t * Var.t
+       | letend of unit
        | start of T.t
        | var of T.t
        | function of T.t
@@ -93,6 +106,7 @@ exp : ZERO              (T.$$(TermOps.Zero, []))
                    in
                        result
                    end)
+    | letexp       (letexp)
 
 app : function LPAREN arg RPAREN (createApp function arg)
 function : exp (exp)
@@ -143,5 +157,23 @@ rec5 : WITH rec6 rec7 (let
 rec6 : IDENT (ParserState.addvar IDENT)
 
 rec7 : MAPSTO exp RCURLY (exp)
+
+letexp : letstart let1
+         letend                 (let1)
+
+letstart : LET                  (ParserState.savetable())
+
+let1 :  let2 let1               ( createLet let2 let1 )
+      | let2 IN exp             ( createLet let2 exp )
+
+let2 : VAL IDENT EQUALS exp     (
+                                  let
+                                    val var = ParserState.addvar IDENT
+                                  in
+                                    (exp,var)
+                                  end
+                                )
+
+letend : END                    ( ParserState.restoretable() )
 
 var : IDENT     (T.`` (ParserState.getvar IDENT))

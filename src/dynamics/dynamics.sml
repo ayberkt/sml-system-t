@@ -16,15 +16,25 @@ struct
 
   fun trystep e =
     case Term.out e of
-         (* ------------------------------- (9.2a) *)
-         (*             z val                      *)
-         Term.$(TermOps.Zero, _)          => VAL
-         (* ------------------------------- (9.2c) *)
-         (*          lam{τ}(x.e)  val              *)
-      |  Term.$(TermOps.Lam _, [body])    => VAL
-      |  Term.$(TermOps.Succ, [e])        => succ e
-      |  Term.$(TermOps.App, [e1, e2])    => app e1 e2
-      |  Term.$(TermOps.Rec, [e0, e1, e]) => recurse e0 e1 e
+        (* ------------------------------- (9.2a) *)
+        (*             z val                      *)
+        Term.$(TermOps.Zero, _)          => VAL
+        (* ------------------------------- (9.2c) *)
+        (*          lam{τ}(x.e)  val              *)
+      | Term.$(TermOps.Lam _, [body])    => VAL
+      | Term.$(TermOps.Succ, [e])        => succ e
+      | Term.$(TermOps.App, [e1, e2])    => app e1 e2
+      | Term.$(TermOps.Rec, [e0, e1, e]) => recurse e0 e1 e
+      | Term.$(TermOps.Let, [e1, e2])    =>
+          (case trystep e1 of
+            (STEP e1') => STEP (Term.$$(TermOps.Let, [e1, e2]))
+          | VAL =>
+              let
+                val abs = Term.out e2
+                val Term.\ (x, e3) = abs
+              in
+                STEP (Term.subst e1 x e3)
+              end)
       | _ => raise Malformed
   and app (e1 : Term.t) (e2 : Term.t) : d =
     case trystep e1 of
