@@ -13,9 +13,9 @@ in
         }
   in
     let
-      val four = s(s(s(s(z))))
+      val six = s(s(s(s(s(s(z))))))
     in
-      times(four)(four)
+      times(six)(six)
     end
   end
 end
