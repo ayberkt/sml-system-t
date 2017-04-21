@@ -14,11 +14,13 @@ val term3 : Term.t =
 
 val term4 : Term.t =
     let
+        val x1 = Var.newvar "x"
+        val x2 = Var.newvar "y"
         val z : Term.t = Term.$$(TermOps.Zero, [])
-        val body : Term.t = Term.\\ (Var.newvar "x",
-                                     Term.\\ (Var.newvar "y",
+        val body : Term.t = Term.\\ (x1,
+                                     Term.\\ (x2,
                                               Term.$$(TermOps.Succ,
-                                                      [Term.`` ("y", 2)])))
+                                                      [Term.`` x2])))
     in
         Term.$$(TermOps.Rec, [z, body, term1])
     end
