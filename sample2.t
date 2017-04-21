@@ -1,13 +1,13 @@
 let
-  val plus  =
-    \(n:nat) \(m:nat) rec m {
+  val plus  = \(n:nat) \(m:nat)
+    rec m {
       z           => n
     | s(x) with y => s(y)
     }
 in
   let
-      val times =
-        \(n:nat) \(m:nat) rec m {
+      val times = \(n:nat) \(m:nat)
+        rec m {
           z           => z
         | s(x) with y => plus(y)(n)
         }
