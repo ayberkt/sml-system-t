@@ -34,6 +34,7 @@ in let val gcdAux = \(gas:nat) rec gas {
       }
     }
 in let val gcd = \(a:nat) \(b:nat) gcdAux (plus (a) (b)) (a) (b)
-in gcd (s(s(s(s(s(s(s(s(s(s(s(s(z)))))))))))))
-       (s(s(s(s(s(s(s(s(z)))))))))
-end end end end end end end end
+in let val twelve = (s(s(s(s(s(s(s(s(s(s(s(s(z)))))))))))))
+in let val eight  = (s(s(s(s(s(s(s(s(z)))))))))
+in gcd(twelve)(eight)
+end end end end end end end end end end
