@@ -38,11 +38,11 @@ s(s(s(s(s(s(s(s(s(z))))))))) : nat
 ```
 
 Using the `bin/system-t` executable you can execute the __T__ program in a file.
-There is a sample program in `sample.t`. Executing it yields the following
+There is a sample program in `examples/sample.t`. Executing it yields the following
 result.
 
 ```
-$ ./bin/system-t sample.t
+$ ./bin/system-t examples/sample.t
 s(s(s(s(z))))
 ```
 
